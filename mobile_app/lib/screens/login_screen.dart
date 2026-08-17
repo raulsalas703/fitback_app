@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -73,6 +74,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _goToRegister() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RegisterScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,7 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextInputType.emailAddress,
                           decoration: const InputDecoration(
                             labelText: 'Correo electrónico',
-                            prefixIcon: Icon(Icons.email),
+                            prefixIcon: Icon(
+                              Icons.email,
+                            ),
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
@@ -151,8 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
                             labelText: 'Contraseña',
-                            prefixIcon:
-                                const Icon(Icons.lock),
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                            ),
                             border:
                                 const OutlineInputBorder(),
                             suffixIcon: IconButton(
@@ -202,6 +215,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : const Text(
                                     'Iniciar sesión',
                                   ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        TextButton(
+                          onPressed:
+                              _isLoading ? null : _goToRegister,
+                          child: const Text(
+                            '¿No tienes cuenta? Crear cuenta',
                           ),
                         ),
                       ],
