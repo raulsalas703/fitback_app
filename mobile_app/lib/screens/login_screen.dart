@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
+import 'home_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -45,10 +46,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final user = response['user'];
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Bienvenido ${user?['name'] ?? ''}',
+      final String userName =
+          user?['name']?.toString() ?? 'Usuario';
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+            userName: userName,
           ),
         ),
       );
@@ -87,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -135,12 +141,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _emailController,
                           keyboardType:
                               TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'Correo electrónico',
-                            prefixIcon: Icon(
-                              Icons.email,
-                            ),
-                            border: OutlineInputBorder(),
+                          decoration:
+                              const InputDecoration(
+                            labelText:
+                                'Correo electrónico',
+                            prefixIcon:
+                                Icon(Icons.email),
+                            border:
+                                OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null ||
@@ -159,13 +167,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 16),
 
                         TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
+                          controller:
+                              _passwordController,
+                          obscureText:
+                              _obscurePassword,
                           decoration: InputDecoration(
                             labelText: 'Contraseña',
-                            prefixIcon: const Icon(
-                              Icons.lock,
-                            ),
+                            prefixIcon:
+                                const Icon(Icons.lock),
                             border:
                                 const OutlineInputBorder(),
                             suffixIcon: IconButton(
@@ -201,8 +210,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           height: 50,
                           child: ElevatedButton(
-                            onPressed:
-                                _isLoading ? null : _login,
+                            onPressed: _isLoading
+                                ? null
+                                : _login,
                             child: _isLoading
                                 ? const SizedBox(
                                     width: 24,
@@ -221,8 +231,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 12),
 
                         TextButton(
-                          onPressed:
-                              _isLoading ? null : _goToRegister,
+                          onPressed: _isLoading
+                              ? null
+                              : _goToRegister,
                           child: const Text(
                             '¿No tienes cuenta? Crear cuenta',
                           ),
