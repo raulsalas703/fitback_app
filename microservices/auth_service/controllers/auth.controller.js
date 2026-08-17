@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
-const users = require('../data/users');
+const User = require('../models/User');
 
 
 // ==========================================
@@ -20,7 +19,7 @@ const register = async (req, res) => {
       });
     }
 
-    // Validar longitud de contraseña
+    // Validar contraseña
     if (password.length < 6) {
       return res.status(400).json({
         message: 'La contraseña debe tener al menos 6 caracteres'
@@ -29,10 +28,10 @@ const register = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Verificar si el correo ya está registrado
-    const existingUser = users.find(
-      (user) => user.email === normalizedEmail
-    );
+    // Buscar usuario en MongoDB
+    const existingUser = await User.findOne({
+      email: normalizedEmail
+    });
 
     if (existingUser) {
       return res.status(409).json({
@@ -43,22 +42,18 @@ const register = async (req, res) => {
     // Cifrar contraseña
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Crear usuario
-    const newUser = {
-      id: crypto.randomUUID(),
+    // Guardar usuario en MongoDB Atlas
+    const newUser = await User.create({
       name: name.trim(),
       email: normalizedEmail,
-      passwordHash,
-      createdAt: new Date().toISOString()
-    };
-
-    users.push(newUser);
+      passwordHash
+    });
 
     return res.status(201).json({
       message: 'Usuario registrado correctamente',
 
       user: {
-        id: newUser.id,
+        id: newUser._id,
         name: newUser.name,
         email: newUser.email,
         createdAt: newUser.createdAt
@@ -66,7 +61,6 @@ const register = async (req, res) => {
     });
 
   } catch (error) {
-
     console.error('Error al registrar usuario:', error);
 
     return res.status(500).json({
@@ -82,7 +76,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
     // Validar campos
@@ -94,10 +87,10 @@ const login = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Buscar usuario
-    const user = users.find(
-      (user) => user.email === normalizedEmail
-    );
+    // Buscar usuario en MongoDB
+    const user = await User.findOne({
+      email: normalizedEmail
+    });
 
     if (!user) {
       return res.status(401).json({
@@ -117,10 +110,10 @@ const login = async (req, res) => {
       });
     }
 
-    // Generar token
+    // Crear JWT
     const token = jwt.sign(
       {
-        userId: user.id,
+        userId: user._id,
         email: user.email
       },
       process.env.JWT_SECRET,
@@ -135,14 +128,13 @@ const login = async (req, res) => {
       token,
 
       user: {
-        id: user.id,
+        id: user._id,
         name: user.name,
         email: user.email
       }
     });
 
   } catch (error) {
-
     console.error('Error al iniciar sesión:', error);
 
     return res.status(500).json({
