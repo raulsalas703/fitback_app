@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 
 const connectDB = require('./config/db');
+const workoutRoutes = require('./routes/workout.routes');
 
 dotenv.config();
 
@@ -21,6 +22,8 @@ app.get('/health', (req, res) => {
     message: 'Microservicio de entrenamientos funcionando'
   });
 });
+
+app.use('/workouts', workoutRoutes);
 
 app.listen(PORT, () => {
   console.log(
