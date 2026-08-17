@@ -6,7 +6,10 @@ const connectDB = async () => {
 
     console.log('MongoDB Atlas conectado en workout_service');
   } catch (error) {
-    console.error('Error al conectar workout_service con MongoDB Atlas:');
+    console.error(
+      'Error al conectar workout_service con MongoDB Atlas:'
+    );
+
     console.error(error.message);
 
     process.exit(1);
