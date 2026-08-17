@@ -15,15 +15,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -47,7 +50,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Usuario registrado correctamente'),
+          content: Text(
+            'Usuario registrado correctamente',
+          ),
         ),
       );
 
@@ -58,7 +63,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            error.toString().replaceFirst('Exception: ', ''),
+            error.toString().replaceFirst(
+                  'Exception: ',
+                  '',
+                ),
           ),
         ),
       );
@@ -76,139 +84,227 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text('Crear cuenta'),
+        title: const Text(
+          'Crear cuenta',
+        ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 420,
-            ),
-            child: Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.stretch,
-                    children: [
-                      const Icon(
-                        Icons.person_add,
-                        size: 64,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      const Text(
-                        'Crear cuenta',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 420,
+              ),
+              child: Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.stretch,
+                      children: [
+                        const Icon(
+                          Icons.person_add,
+                          size: 64,
                         ),
-                      ),
 
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 16),
 
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nombre',
-                          prefixIcon: Icon(Icons.person),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return 'Ingresa tu nombre';
-                          }
-
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType:
-                            TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'Correo electrónico',
-                          prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return 'Ingresa tu correo';
-                          }
-
-                          if (!value.contains('@')) {
-                            return 'Ingresa un correo válido';
-                          }
-
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          prefixIcon:
-                              const Icon(Icons.lock),
-                          border:
-                              const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword =
-                                    !_obscurePassword;
-                              });
-                            },
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
+                        const Text(
+                          'Crear cuenta',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.isEmpty) {
-                            return 'Ingresa una contraseña';
-                          }
 
-                          if (value.length < 6) {
-                            return 'Mínimo 6 caracteres';
-                          }
+                        const SizedBox(height: 8),
 
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      SizedBox(
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed:
-                              _isLoading ? null : _register,
-                          child: _isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text(
-                                  'Registrarme',
-                                ),
+                        const Text(
+                          'Regístrate para comenzar en FitBack',
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: 32),
+
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction:
+                              TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre',
+                            prefixIcon: Icon(
+                              Icons.person,
+                            ),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null ||
+                                value.trim().isEmpty) {
+                              return 'Ingresa tu nombre';
+                            }
+
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType:
+                              TextInputType.emailAddress,
+                          textInputAction:
+                              TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Correo electrónico',
+                            prefixIcon: Icon(
+                              Icons.email,
+                            ),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null ||
+                                value.trim().isEmpty) {
+                              return 'Ingresa tu correo';
+                            }
+
+                            if (!value.contains('@')) {
+                              return 'Ingresa un correo válido';
+                            }
+
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          textInputAction:
+                              TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: 'Contraseña',
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                            ),
+                            border:
+                                const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword =
+                                      !_obscurePassword;
+                                });
+                              },
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty) {
+                              return 'Ingresa una contraseña';
+                            }
+
+                            if (value.length < 6) {
+                              return 'Mínimo 6 caracteres';
+                            }
+
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller:
+                              _confirmPasswordController,
+                          obscureText:
+                              _obscureConfirmPassword,
+                          textInputAction:
+                              TextInputAction.done,
+                          decoration: InputDecoration(
+                            labelText:
+                                'Confirmar contraseña',
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                            ),
+                            border:
+                                const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
+                                });
+                              },
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty) {
+                              return 'Confirma tu contraseña';
+                            }
+
+                            if (value !=
+                                _passwordController.text) {
+                              return 'Las contraseñas no coinciden';
+                            }
+
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed:
+                                _isLoading ? null : _register,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child:
+                                        CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Registrarme',
+                                  ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        TextButton(
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  Navigator.pop(context);
+                                },
+                          child: const Text(
+                            'Ya tengo una cuenta',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
