@@ -1,20 +1,17 @@
-const connectDB = require('./config/db');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-const authRoutes = require('./routes/auth.routes');
-
 dotenv.config();
 
-connectDB();
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-app.use('/auth', authRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -24,9 +21,25 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Rutas de autenticación
 app.use('/auth', authRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Auth Service ejecutandose en http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(
+        `Auth Service ejecutandose en http://localhost:${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error(
+      'No se pudo iniciar auth_service:',
+      error.message
+    );
+
+    process.exit(1);
+  }
+};
+
+startServer();
