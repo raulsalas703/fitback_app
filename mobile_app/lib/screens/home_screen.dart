@@ -1,24 +1,67 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
+import '../services/workout_api.dart';
 import '../widgets/fitback_background.dart';
+import 'goals_screen.dart';
+import 'history_screen.dart';
 import 'login_screen.dart';
+import 'profile_screen.dart';
+import 'routines_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String userName;
 
   const HomeScreen({super.key, required this.userName});
 
-  Future<void> _logout(BuildContext context) async {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int? _weeklyTotal;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWeeklySummary();
+  }
+
+  Future<void> _loadWeeklySummary() async {
+    try {
+      final weekly = await WorkoutApi.getWeeklyWorkouts();
+
+      if (!mounted) return;
+
+      setState(() {
+        _weeklyTotal = (weekly['total'] as num?)?.toInt() ?? 0;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _weeklyTotal = null;
+        });
+      }
+    }
+  }
+
+  Future<void> _logout() async {
     await AuthApi.logout();
 
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
     );
+  }
+
+  void _openScreen(Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    ).then((_) => _loadWeeklySummary());
   }
 
   @override
@@ -30,156 +73,172 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Cerrar sesión',
-            onPressed: () => _logout(context),
+            onPressed: _logout,
             icon: const Icon(Icons.logout),
           ),
         ],
       ),
 
       body: FitBackBackground(
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 700),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [
-                          Color(0xFFF5D061),
-                          Color(0xFFD4AF37),
-                          Color(0xFFB8860B),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 700),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [
+                        Color(0xFFF5D061),
+                        Color(0xFFD4AF37),
+                        Color(0xFFB8860B),
+                      ],
+                    ).createShader(bounds),
+                    child: Text(
+                      'Hola, ${widget.userName} 👋',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  const Text(
+                    'Bienvenido a FitBack',
+                    style: TextStyle(fontSize: 16, color: Colors.white70),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2A2008),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: const Color(0x66D4AF37),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.trending_up,
+                              color: Color(0xFFD4AF37),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Tu progreso semanal',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  _weeklyTotal == null
+                                      ? '--'
+                                      : '$_weeklyTotal entrenamiento${_weeklyTotal == 1 ? '' : 's'} completados',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE6C65C),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
-                      ).createShader(bounds),
-                      child: Text(
-                        'Hola, $userName 👋',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 8),
+                  const SizedBox(height: 24),
 
-                    const Text(
-                      'Bienvenido a FitBack',
-                      style: TextStyle(fontSize: 16, color: Colors.white70),
-                    ),
+                  _menuCard(
+                    icon: Icons.fitness_center,
+                    title: 'Entrenamientos',
+                    subtitle: 'Explora y completa tus rutinas',
+                    onTap: () => _openScreen(const RoutinesScreen()),
+                  ),
 
-                    const SizedBox(height: 32),
+                  const SizedBox(height: 12),
 
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.fitness_center,
-                          size: 36,
-                          color: Color(0xFFD4AF37),
-                        ),
-                        title: const Text(
-                          'Entrenamientos',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: const Text(
-                          'Registra y consulta tus rutinas',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFFD4AF37),
-                          size: 18,
-                        ),
-                        onTap: () {},
-                      ),
-                    ),
+                  _menuCard(
+                    icon: Icons.event_available,
+                    title: 'Historial semanal',
+                    subtitle: 'Revisa tu progreso y entrenamientos',
+                    onTap: () => _openScreen(const HistoryScreen()),
+                  ),
 
-                    const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.flag,
-                          size: 36,
-                          color: Color(0xFFD4AF37),
-                        ),
-                        title: const Text(
-                          'Objetivos SMART',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: const Text(
-                          'Define y administra tus objetivos',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFFD4AF37),
-                          size: 18,
-                        ),
-                        onTap: () {},
-                      ),
-                    ),
+                  _menuCard(
+                    icon: Icons.flag,
+                    title: 'Metas SMART',
+                    subtitle: 'Define y administra tus objetivos',
+                    onTap: () => _openScreen(const GoalsScreen()),
+                  ),
 
-                    const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.show_chart,
-                          size: 36,
-                          color: Color(0xFFD4AF37),
-                        ),
-                        title: const Text(
-                          'Progreso',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: const Text(
-                          'Consulta tu avance',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFFD4AF37),
-                          size: 18,
-                        ),
-                        onTap: () {},
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.person,
-                          size: 36,
-                          color: Color(0xFFD4AF37),
-                        ),
-                        title: const Text(
-                          'Mi perfil',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: const Text(
-                          'Consulta los datos de tu cuenta',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFFD4AF37),
-                          size: 18,
-                        ),
-                        onTap: () {},
-                      ),
-                    ),
-                  ],
-                ),
+                  _menuCard(
+                    icon: Icons.person,
+                    title: 'Mi perfil',
+                    subtitle: 'Consulta los datos de tu cuenta',
+                    onTap: () => _openScreen(const ProfileScreen()),
+                  ),
+                ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _menuCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A2008),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0x66D4AF37)),
+          ),
+          child: Icon(icon, color: const Color(0xFFD4AF37)),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(subtitle, style: const TextStyle(color: Colors.white70)),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          color: Color(0xFFD4AF37),
+          size: 18,
+        ),
+        onTap: onTap,
       ),
     );
   }

@@ -1,7 +1,9 @@
 const express = require('express');
 
 const {
-  createWorkout
+  createWorkout,
+  getWorkouts,
+  getWeeklyWorkouts
 } = require('../controllers/workout.controller');
 
 const verifyToken = require(
@@ -14,6 +16,18 @@ router.post(
   '/',
   verifyToken,
   createWorkout
+);
+
+router.get(
+  '/',
+  verifyToken,
+  getWorkouts
+);
+
+router.get(
+  '/weekly',
+  verifyToken,
+  getWeeklyWorkouts
 );
 
 module.exports = router;
