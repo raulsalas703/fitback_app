@@ -22,3 +22,4 @@ class FitBackApp extends StatelessWidget {
     );
   }
 }
+//Hola Alfonso creo que ya esta listo el proyecto, si quieres podemos hacer una videollamada para que me digas que mas quieres agregarle al proyecto.
