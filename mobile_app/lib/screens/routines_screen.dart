@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/routine.dart';
 import '../widgets/fitback_background.dart';
+import '../widgets/fitback_cover.dart';
 import 'routine_detail_screen.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -37,6 +38,14 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: FitBackCover(
+                imagePath: 'assets/images/cover_workout.jpg',
+                height: 130,
+              ),
+            ),
+
             SizedBox(
               height: 48,
               child: ListView.separated(
@@ -46,8 +55,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                 ),
                 scrollDirection: Axis.horizontal,
                 itemCount: _levels.length,
-separatorBuilder: (_, _) =>
-                    const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final level = _levels[index];
                   final selected = level == _selectedLevel;
@@ -80,8 +88,7 @@ separatorBuilder: (_, _) =>
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: _filteredRoutines.length,
-separatorBuilder: (_, _) =>
-                    const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final routine = _filteredRoutines[index];
 

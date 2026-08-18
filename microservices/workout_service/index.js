@@ -2,12 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-const connectDB = require('./config/db');
+const db = require('./config/db');
 const workoutRoutes = require('./routes/workout.routes');
 
 dotenv.config();
 
-connectDB();
+db.exec('SELECT 1');
 
 const app = express();
 const PORT = process.env.PORT || 3002;

@@ -1,22 +1,29 @@
-const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
+const { DatabaseSync } = require('node:sqlite');
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(
-      process.env.MONGODB_URI,
-      {
-        family: 4,
-        serverSelectionTimeoutMS: 10000
-      }
-    );
+const dataDir = path.join(__dirname, '..', 'data');
 
-    console.log('MongoDB Atlas conectado correctamente');
-  } catch (error) {
-    console.error('Error al conectar MongoDB Atlas:');
-    console.error(error.message);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
-    process.exit(1);
-  }
-};
+const db = new DatabaseSync(
+  path.join(dataDir, 'fitback.db')
+);
 
-module.exports = connectDB;
+db.exec(`
+  PRAGMA journal_mode = WAL;
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    passwordHash TEXT NOT NULL,
+    createdAt TEXT NOT NULL DEFAULT (
+      strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+    )
+  );
+`);
+
+module.exports = db;

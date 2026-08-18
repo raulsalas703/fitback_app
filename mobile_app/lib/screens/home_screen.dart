@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_api.dart';
 import '../services/workout_api.dart';
 import '../widgets/fitback_background.dart';
+import '../widgets/fitback_cover.dart';
 import 'goals_screen.dart';
 import 'history_screen.dart';
 import 'login_screen.dart';
@@ -88,6 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const FitBackCover(
+                    imagePath: 'assets/images/cover_gym_2.jpg',
+                    height: 170,
+                  ),
+
+                  const SizedBox(height: 20),
+
                   ShaderMask(
                     shaderCallback: (bounds) => const LinearGradient(
                       colors: [
@@ -107,6 +115,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const SizedBox(height: 8),
+
+                  Text(
+                    _todayLabel(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFFD4AF37),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+
+                  const SizedBox(height: 2),
 
                   const Text(
                     'Bienvenido a FitBack',
@@ -241,5 +260,35 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: onTap,
       ),
     );
+  }
+
+  String _todayLabel() {
+    const weekdays = [
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+      'Domingo',
+    ];
+    const months = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+
+    final now = DateTime.now();
+
+    return '${weekdays[now.weekday - 1]}, ${now.day} de ${months[now.month - 1]} de ${now.year}';
   }
 }

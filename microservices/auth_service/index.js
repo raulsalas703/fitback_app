@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const connectDB = require('./config/db');
+const db = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
 
 const app = express();
@@ -23,9 +23,9 @@ app.get('/health', (req, res) => {
 
 app.use('/auth', authRoutes);
 
-const startServer = async () => {
+const startServer = () => {
   try {
-    await connectDB();
+    db.exec('SELECT 1');
 
     app.listen(PORT, () => {
       console.log(

@@ -10,7 +10,7 @@ const createWorkout = async (req, res) => {
       workoutDate
     } = req.body;
 
-    if (!name || name.trim().isEmpty) {
+    if (!name || name.trim().length === 0) {
       return res.status(400).json({
         message: 'El nombre del entrenamiento es obligatorio'
       });
@@ -22,13 +22,15 @@ const createWorkout = async (req, res) => {
       });
     }
 
-    const workout = await Workout.create({
+    const workout = Workout.create({
       userId: req.user.userId,
       name: name.trim(),
       exercises,
       durationMinutes: durationMinutes || 0,
       notes: notes || '',
-      workoutDate: workoutDate || new Date()
+      workoutDate: workoutDate
+        ? new Date(workoutDate)
+        : new Date()
     });
 
     return res.status(201).json({
@@ -54,11 +56,9 @@ const createWorkout = async (req, res) => {
 
 const getWorkouts = async (req, res) => {
   try {
-    const workouts = await Workout.find({
-      userId: req.user.userId
-    })
-      .sort({ workoutDate: -1 })
-      .lean();
+    const workouts = Workout.findByUser(
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: 'Entrenamientos obtenidos correctamente',
@@ -93,15 +93,11 @@ const getWeeklyWorkouts = async (req, res) => {
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(endOfWeek.getDate() + 7);
 
-    const workouts = await Workout.find({
-      userId: req.user.userId,
-      workoutDate: {
-        $gte: startOfWeek,
-        $lt: endOfWeek
-      }
-    })
-      .sort({ workoutDate: -1 })
-      .lean();
+    const workouts = Workout.findByUserInRange(
+      req.user.userId,
+      startOfWeek,
+      endOfWeek
+    );
 
     return res.status(200).json({
       message: 'Entrenamientos semanales obtenidos correctamente',

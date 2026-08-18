@@ -1,29 +1,27 @@
-const mongoose = require('mongoose');
+const db = require('../config/db');
 
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
-
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true
-    },
-
-    passwordHash: {
-      type: String,
-      required: true
-    }
+const User = {
+  findByEmail(email) {
+    return db
+      .prepare('SELECT * FROM users WHERE email = ?')
+      .get(email) || null;
   },
-  {
-    timestamps: true
-  }
-);
 
-module.exports = mongoose.model('User', userSchema);
+  findById(id) {
+    return db
+      .prepare('SELECT * FROM users WHERE id = ?')
+      .get(id) || null;
+  },
+
+  create({ name, email, passwordHash }) {
+    const info = db
+      .prepare(
+        'INSERT INTO users (name, email, passwordHash) VALUES (?, ?, ?)'
+      )
+      .run(name, email, passwordHash);
+
+    return User.findById(info.lastInsertRowid);
+  }
+};
+
+module.exports = User;

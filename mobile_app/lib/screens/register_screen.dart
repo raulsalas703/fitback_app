@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
 import '../widgets/fitback_background.dart';
+import '../widgets/fitback_cover.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -90,9 +91,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          const FitBackCover(
+                            imagePath: 'assets/images/cover_gym_1.jpg',
+                            height: 130,
+                          ),
+
+                          const SizedBox(height: 16),
+
                           const Icon(
                             Icons.person_add,
-                            size: 64,
+                            size: 48,
                             color: Color(0xFFD4AF37),
                           ),
 

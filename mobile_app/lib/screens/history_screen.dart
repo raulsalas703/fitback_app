@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/workout_api.dart';
 import '../utils/formatters.dart';
 import '../widgets/fitback_background.dart';
+import '../widgets/fitback_cover.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -112,8 +113,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: workouts.length,
-separatorBuilder: (_, _) =>
-          const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final workout = workouts[index] as Map<String, dynamic>;
 
@@ -234,6 +234,14 @@ separatorBuilder: (_, _) =>
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: FitBackCover(
+                          imagePath: 'assets/images/cover_gym_1.jpg',
+                          height: 120,
+                        ),
+                      ),
+
                       _summaryCard(weeklyTotal, history.length),
 
                       const SizedBox(height: 24),

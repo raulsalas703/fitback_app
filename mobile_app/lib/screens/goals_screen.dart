@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/goals_storage.dart';
 import '../widgets/fitback_background.dart';
+import '../widgets/fitback_cover.dart';
 
 class GoalsScreen extends StatefulWidget {
   const GoalsScreen({super.key});
@@ -158,6 +159,14 @@ class _GoalsScreenState extends State<GoalsScreen> {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: FitBackCover(
+                      imagePath: 'assets/images/cover_running.jpg',
+                      height: 120,
+                    ),
+                  ),
+
                   if (_goals.isEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 48),
@@ -223,13 +232,18 @@ class _GoalsScreenState extends State<GoalsScreen> {
                             ),
                             _goals.isEmpty
                                 ? const SizedBox.shrink()
-                                : ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: LinearProgressIndicator(
-                                      value: _completedCount / _goals.length,
-                                      minHeight: 8,
-                                      color: const Color(0xFFD4AF37),
-                                      backgroundColor: const Color(0xFF2A2008),
+                                : SizedBox(
+                                    width: 110,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: LinearProgressIndicator(
+                                        value: _completedCount / _goals.length,
+                                        minHeight: 8,
+                                        color: const Color(0xFFD4AF37),
+                                        backgroundColor: const Color(
+                                          0xFF2A2008,
+                                        ),
+                                      ),
                                     ),
                                   ),
                           ],

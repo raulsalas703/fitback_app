@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
 import '../widgets/fitback_background.dart';
+import '../widgets/fitback_cover.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -96,12 +97,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Icon(
-                            Icons.fitness_center,
-                            size: 64,
-                            color: Color(0xFFD4AF37),
+                          const FitBackCover(
+                            imagePath: 'assets/images/cover_gym_1.jpg',
+                            height: 150,
                           ),
 
+                          const SizedBox(height: 20),
+
+                          const Icon(
+                            Icons.fitness_center,
+                            size: 48,
+                            color: Color(0xFFD4AF37),
+                          ),
                           const SizedBox(height: 16),
 
                           ShaderMask(

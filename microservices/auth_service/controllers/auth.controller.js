@@ -28,10 +28,8 @@ const register = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Buscar usuario en MongoDB
-    const existingUser = await User.findOne({
-      email: normalizedEmail
-    });
+    // Buscar usuario en SQLite
+    const existingUser = User.findByEmail(normalizedEmail);
 
     if (existingUser) {
       return res.status(409).json({
@@ -42,8 +40,8 @@ const register = async (req, res) => {
     // Cifrar contraseña
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Guardar usuario en MongoDB Atlas
-    const newUser = await User.create({
+    // Guardar usuario en SQLite
+    const newUser = User.create({
       name: name.trim(),
       email: normalizedEmail,
       passwordHash
@@ -53,7 +51,7 @@ const register = async (req, res) => {
       message: 'Usuario registrado correctamente',
 
       user: {
-        id: newUser._id,
+        id: String(newUser.id),
         name: newUser.name,
         email: newUser.email,
         createdAt: newUser.createdAt
@@ -87,10 +85,8 @@ const login = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Buscar usuario en MongoDB
-    const user = await User.findOne({
-      email: normalizedEmail
-    });
+    // Buscar usuario en SQLite
+    const user = User.findByEmail(normalizedEmail);
 
     if (!user) {
       return res.status(401).json({
@@ -113,7 +109,7 @@ const login = async (req, res) => {
     // Crear JWT
     const token = jwt.sign(
       {
-        userId: user._id,
+        userId: user.id,
         email: user.email
       },
       process.env.JWT_SECRET,
@@ -128,7 +124,7 @@ const login = async (req, res) => {
       token,
 
       user: {
-        id: user._id,
+        id: String(user.id),
         name: user.name,
         email: user.email
       }
@@ -149,9 +145,7 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(
-      req.user.userId
-    ).select('-passwordHash');
+    const user = User.findById(req.user.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -163,7 +157,7 @@ const getProfile = async (req, res) => {
       message: 'Perfil obtenido correctamente',
 
       user: {
-        id: user._id,
+        id: String(user.id),
         name: user.name,
         email: user.email,
         createdAt: user.createdAt

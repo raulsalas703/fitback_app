@@ -1,78 +1,70 @@
-const mongoose = require('mongoose');
+const db = require('../config/db');
 
-const exerciseSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
+const parseWorkout = (row) => {
+  if (!row) return null;
 
-    sets: {
-      type: Number,
-      required: true,
-      min: 1
-    },
+  return {
+    ...row,
+    id: String(row.id),
+    userId: String(row.userId),
+    exercises: JSON.parse(row.exercises || '[]')
+  };
+};
 
-    reps: {
-      type: Number,
-      required: true,
-      min: 1
-    },
+const Workout = {
+  create({
+    userId,
+    name,
+    exercises,
+    durationMinutes,
+    notes,
+    workoutDate
+  }) {
+    const info = db
+      .prepare(
+        `INSERT INTO workouts
+          (userId, name, exercises, durationMinutes, notes, workoutDate)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      )
+      .run(
+        userId,
+        name,
+        JSON.stringify(exercises),
+        durationMinutes,
+        notes,
+        workoutDate.toISOString()
+      );
 
-    weight: {
-      type: Number,
-      default: 0,
-      min: 0
-    }
+    const row = db
+      .prepare('SELECT * FROM workouts WHERE id = ?')
+      .get(info.lastInsertRowid);
+
+    return parseWorkout(row);
   },
-  {
-    _id: false
-  }
-);
 
-const workoutSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: String,
-      required: true
-    },
+  findByUser(userId) {
+    const rows = db
+      .prepare(
+        `SELECT * FROM workouts
+         WHERE userId = ?
+         ORDER BY workoutDate DESC`
+      )
+      .all(userId);
 
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
-
-    exercises: {
-      type: [exerciseSchema],
-      required: true,
-      default: []
-    },
-
-    durationMinutes: {
-      type: Number,
-      default: 0,
-      min: 0
-    },
-
-    notes: {
-      type: String,
-      trim: true,
-      default: ''
-    },
-
-    workoutDate: {
-      type: Date,
-      default: Date.now
-    }
+    return rows.map(parseWorkout);
   },
-  {
-    timestamps: true
-  }
-);
 
-module.exports = mongoose.model(
-  'Workout',
-  workoutSchema
-);
+  findByUserInRange(userId, start, end) {
+    const rows = db
+      .prepare(
+        `SELECT * FROM workouts
+         WHERE userId = ? AND workoutDate >= ? AND workoutDate < ?
+         ORDER BY workoutDate DESC`
+      )
+      .all(userId, start.toISOString(), end.toISOString());
+
+    return rows.map(parseWorkout);
+  }
+};
+
+module.exports = Workout;
