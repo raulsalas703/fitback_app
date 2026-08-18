@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
+import '../widgets/fitback_background.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -46,28 +47,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final user = response['user'];
 
-      final String userName =
-          user?['name']?.toString() ?? 'Usuario';
+      final String userName = user?['name']?.toString() ?? 'Usuario';
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(
-            userName: userName,
-          ),
-        ),
+        MaterialPageRoute(builder: (context) => HomeScreen(userName: userName)),
       );
     } catch (error) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            error.toString().replaceFirst(
-                  'Exception: ',
-                  '',
-                ),
-          ),
+          content: Text(error.toString().replaceFirst('Exception: ', '')),
         ),
       );
     } finally {
@@ -82,163 +73,152 @@ class _LoginScreenState extends State<LoginScreen> {
   void _goToRegister() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const RegisterScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const RegisterScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 420,
-              ),
-              child: Card(
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
-                      children: [
-                        const Icon(
-                          Icons.fitness_center,
-                          size: 64,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        const Text(
-                          'FitBack',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
+      body: FitBackBackground(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Icon(
+                            Icons.fitness_center,
+                            size: 64,
+                            color: Color(0xFFD4AF37),
                           ),
-                        ),
 
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 16),
 
-                        const Text(
-                          'Inicia sesión para continuar',
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType:
-                              TextInputType.emailAddress,
-                          decoration:
-                              const InputDecoration(
-                            labelText:
-                                'Correo electrónico',
-                            prefixIcon:
-                                Icon(Icons.email),
-                            border:
-                                OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
-                              return 'Ingresa tu correo';
-                            }
-
-                            if (!value.contains('@')) {
-                              return 'Ingresa un correo válido';
-                            }
-
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        TextFormField(
-                          controller:
-                              _passwordController,
-                          obscureText:
-                              _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: 'Contraseña',
-                            prefixIcon:
-                                const Icon(Icons.lock),
-                            border:
-                                const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword =
-                                      !_obscurePassword;
-                                });
-                              },
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [
+                                Color(0xFFF5D061),
+                                Color(0xFFD4AF37),
+                                Color(0xFFB8860B),
+                              ],
+                            ).createShader(bounds),
+                            child: const Text(
+                              'FitBack',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty) {
-                              return 'Ingresa tu contraseña';
-                            }
 
-                            if (value.length < 6) {
-                              return 'Mínimo 6 caracteres';
-                            }
+                          const SizedBox(height: 8),
 
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        SizedBox(
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _isLoading
-                                ? null
-                                : _login,
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child:
-                                        CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Iniciar sesión',
-                                  ),
+                          const Text(
+                            'Inicia sesión para continuar',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white70),
                           ),
-                        ),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 32),
 
-                        TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : _goToRegister,
-                          child: const Text(
-                            '¿No tienes cuenta? Crear cuenta',
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration: const InputDecoration(
+                              labelText: 'Correo electrónico',
+                              prefixIcon: Icon(Icons.email),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Ingresa tu correo';
+                              }
+
+                              if (!value.contains('@')) {
+                                return 'Ingresa un correo válido';
+                              }
+
+                              return null;
+                            },
                           ),
-                        ),
-                      ],
+
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) => _login(),
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña',
+                              prefixIcon: const Icon(Icons.lock),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ingresa tu contraseña';
+                              }
+
+                              if (value.length < 6) {
+                                return 'Mínimo 6 caracteres';
+                              }
+
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          SizedBox(
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _login,
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  : const Text('Iniciar sesión'),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          TextButton(
+                            onPressed: _isLoading ? null : _goToRegister,
+                            child: const Text(
+                              '¿No tienes cuenta? Crear cuenta',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

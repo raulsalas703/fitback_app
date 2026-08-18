@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_api.dart';
+import '../widgets/fitback_background.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -49,11 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Usuario registrado correctamente',
-          ),
-        ),
+        const SnackBar(content: Text('Usuario registrado correctamente')),
       );
 
       Navigator.pop(context);
@@ -62,12 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            error.toString().replaceFirst(
-                  'Exception: ',
-                  '',
-                ),
-          ),
+          content: Text(error.toString().replaceFirst('Exception: ', '')),
         ),
       );
     } finally {
@@ -82,228 +74,201 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text(
-          'Crear cuenta',
-        ),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 420,
-              ),
-              child: Card(
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
-                      children: [
-                        const Icon(
-                          Icons.person_add,
-                          size: 64,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        const Text(
-                          'Crear cuenta',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
+      appBar: AppBar(title: const Text('Crear cuenta')),
+      body: FitBackBackground(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Icon(
+                            Icons.person_add,
+                            size: 64,
+                            color: Color(0xFFD4AF37),
                           ),
-                        ),
 
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 16),
 
-                        const Text(
-                          'Regístrate para comenzar en FitBack',
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        TextFormField(
-                          controller: _nameController,
-                          textInputAction:
-                              TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Nombre',
-                            prefixIcon: Icon(
-                              Icons.person,
-                            ),
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
-                              return 'Ingresa tu nombre';
-                            }
-
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType:
-                              TextInputType.emailAddress,
-                          textInputAction:
-                              TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Correo electrónico',
-                            prefixIcon: Icon(
-                              Icons.email,
-                            ),
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
-                              return 'Ingresa tu correo';
-                            }
-
-                            if (!value.contains('@')) {
-                              return 'Ingresa un correo válido';
-                            }
-
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          textInputAction:
-                              TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: 'Contraseña',
-                            prefixIcon: const Icon(
-                              Icons.lock,
-                            ),
-                            border:
-                                const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword =
-                                      !_obscurePassword;
-                                });
-                              },
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [
+                                Color(0xFFF5D061),
+                                Color(0xFFD4AF37),
+                                Color(0xFFB8860B),
+                              ],
+                            ).createShader(bounds),
+                            child: const Text(
+                              'Crear cuenta',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty) {
-                              return 'Ingresa una contraseña';
-                            }
 
-                            if (value.length < 6) {
-                              return 'Mínimo 6 caracteres';
-                            }
+                          const SizedBox(height: 8),
 
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        TextFormField(
-                          controller:
-                              _confirmPasswordController,
-                          obscureText:
-                              _obscureConfirmPassword,
-                          textInputAction:
-                              TextInputAction.done,
-                          decoration: InputDecoration(
-                            labelText:
-                                'Confirmar contraseña',
-                            prefixIcon: const Icon(
-                              Icons.lock_outline,
-                            ),
-                            border:
-                                const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscureConfirmPassword =
-                                      !_obscureConfirmPassword;
-                                });
-                              },
-                              icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                            ),
+                          const Text(
+                            'Regístrate para comenzar en FitBack',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white70),
                           ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty) {
-                              return 'Confirma tu contraseña';
-                            }
 
-                            if (value !=
-                                _passwordController.text) {
-                              return 'Las contraseñas no coinciden';
-                            }
+                          const SizedBox(height: 32),
 
-                            return null;
-                          },
-                        ),
+                          TextFormField(
+                            controller: _nameController,
+                            textInputAction: TextInputAction.next,
+                            decoration: const InputDecoration(
+                              labelText: 'Nombre',
+                              prefixIcon: Icon(Icons.person),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Ingresa tu nombre';
+                              }
 
-                        const SizedBox(height: 24),
-
-                        SizedBox(
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed:
-                                _isLoading ? null : _register,
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child:
-                                        CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Registrarme',
-                                  ),
+                              return null;
+                            },
                           ),
-                        ),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 16),
 
-                        TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () {
-                                  Navigator.pop(context);
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration: const InputDecoration(
+                              labelText: 'Correo electrónico',
+                              prefixIcon: Icon(Icons.email),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Ingresa tu correo';
+                              }
+
+                              if (!value.contains('@')) {
+                                return 'Ingresa un correo válido';
+                              }
+
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña',
+                              prefixIcon: const Icon(Icons.lock),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
                                 },
-                          child: const Text(
-                            'Ya tengo una cuenta',
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ingresa una contraseña';
+                              }
+
+                              if (value.length < 6) {
+                                return 'Mínimo 6 caracteres';
+                              }
+
+                              return null;
+                            },
                           ),
-                        ),
-                      ],
+
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: _obscureConfirmPassword,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) => _register(),
+                            decoration: InputDecoration(
+                              labelText: 'Confirmar contraseña',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
+                                  });
+                                },
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Confirma tu contraseña';
+                              }
+
+                              if (value != _passwordController.text) {
+                                return 'Las contraseñas no coinciden';
+                              }
+
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          SizedBox(
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _register,
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  : const Text('Registrarme'),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          TextButton(
+                            onPressed: _isLoading
+                                ? null
+                                : () {
+                                    Navigator.pop(context);
+                                  },
+                            child: const Text('Ya tengo una cuenta'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -315,5 +280,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
-//Valimos chetos😅
