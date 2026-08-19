@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 import 'auth_api.dart';
 
 class WorkoutApi {
-  static const String baseUrl = 'http://localhost:3002';
+  // localhost para Windows/Chrome, 10.0.2.2 para el emulador de Android.
+  static String get baseUrl =>
+      'http://${!kIsWeb && Platform.isAndroid ? '10.0.2.2' : 'localhost'}:3002';
 
   static Future<Map<String, dynamic>> createWorkout({
     required String name,

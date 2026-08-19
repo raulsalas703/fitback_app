@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthApi {
-  // Por ahora usaremos localhost para probar en Windows/Chrome.
-  static const String baseUrl = 'http://localhost:3001';
+  // localhost para Windows/Chrome, 10.0.2.2 para el emulador de Android.
+  static String get baseUrl =>
+      'http://${!kIsWeb && Platform.isAndroid ? '10.0.2.2' : 'localhost'}:3001';
 
   static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
